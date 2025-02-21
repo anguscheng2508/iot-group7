@@ -30,7 +30,8 @@ async def create_event(event: Event):
 async def get_event():
     """Get list of events for frontend
     """
-    pass
+    data = data_utils.read_event_data().to_dict(orient='records')
+    return {'data': data}
 
 
 @app.put('/acturator/{actuator_type}')
