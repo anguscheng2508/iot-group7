@@ -38,5 +38,6 @@ class Sensor(BaseModel):
 
 
 class SensorData(BaseModel):
+    sensor: Sensor
     timestamp: datetime
     value: float

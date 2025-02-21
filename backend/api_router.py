@@ -1,7 +1,7 @@
 import fastapi
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.data_models import ActuatorType, Event, SensorType
+from src.data_models import ActuatorType, Event, SensorData, SensorType
 
 app = fastapi.FastAPI()
 
@@ -47,6 +47,7 @@ async def get_acturator():
     """
     pass
 
+
 @app.get('/sensor')
 async def get_sensor():
     """Get list of sensors for frontend
@@ -60,5 +61,15 @@ async def get_sensor_data_by_id(sensor_type: SensorType):
 
     Args:
         sensor_type (SensorType): sensor enum type
+    """
+    pass
+
+
+@app.post('/sensor-data')
+async def create_sensor_data(sensor_data: SensorData):
+    """Create sensor data from ESP32
+
+    Args:
+        sensor_data (SensorData): sensor data model
     """
     pass
