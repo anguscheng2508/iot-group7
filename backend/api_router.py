@@ -1,6 +1,7 @@
 import fastapi
 from fastapi.middleware.cors import CORSMiddleware
 
+from src.utils import data_utils
 from src.data_models import ActuatorType, Event, SensorData, SensorType
 
 app = fastapi.FastAPI()
@@ -21,6 +22,7 @@ async def create_event(event: Event):
     Returns:
         event: Event data model
     """
+    data_utils.write_event_data(event)
     return {'message': 'Event Successfully Created'}
 
 
@@ -72,4 +74,5 @@ async def create_sensor_data(sensor_data: SensorData):
     Args:
         sensor_data (SensorData): sensor data model
     """
-    pass
+    data_utils.write_sensor_data(sensor_data, sensor_data.sensor.sensor_type)
+    return {'message': 'Sensor Data Successfully Created'}

@@ -46,7 +46,7 @@ def main(argv):
     uvicorn.run(
         'api_router:app',
         host='0.0.0.0',
-        port=8001,
+        port=8000,
         log_level='debug',
         reload=True,
         # To pass client real ip through proxies (AWS app runner and/or nginx)

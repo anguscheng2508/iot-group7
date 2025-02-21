@@ -1,6 +1,6 @@
 import datetime
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class SensorType(Enum):
@@ -24,7 +24,9 @@ class Event(BaseModel):
     device_id: int
     name: str
     description: str
-    created_at: str
+    timestamp: datetime.datetime
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class Actuator(BaseModel):
@@ -39,5 +41,7 @@ class Sensor(BaseModel):
 
 class SensorData(BaseModel):
     sensor: Sensor
-    timestamp: datetime
+    timestamp: datetime.datetime
     value: float
+
+    model_config = ConfigDict(arbitrary_types_allowed=True)
