@@ -1,5 +1,7 @@
 import fastapi
 from fastapi.middleware.cors import CORSMiddleware
+from typing import List
+from absl import logging
 
 from src.utils import data_utils
 from src.data_models import ActuatorType, Event, SensorData, SensorType
@@ -27,11 +29,12 @@ async def create_event(event: Event):
 
 
 @app.get('/event')
-async def get_event():
+async def get_event() -> List[Event]:
     """Get list of events for frontend
     """
-    data = data_utils.read_event_data().to_dict(orient='records')
-    return {'data': data}
+    data = data_utils.read_event_data()
+    events = [Event(**row) for index, row in data.iterrows()]
+    return events
 
 
 @app.put('/acturator/{actuator_type}')
@@ -59,13 +62,16 @@ async def get_sensor():
 
 
 @app.get('/sensor-data/{sensor_type}')
-async def get_sensor_data_by_id(sensor_type: SensorType):
+async def get_sensor_data_by_id(sensor_type: SensorType) -> List[SensorData]:
     """Get sensor data by id for frontend
 
     Args:
         sensor_type (SensorType): sensor enum type
     """
-    pass
+    data = data_utils.read_sensor_data(sensor_type)
+    data['sensor'] = data['sensor'].apply(lambda x: SensorType[x.split('.')[1]])
+    records = [SensorData(**row) for index, row in data.iterrows()]
+    return records
 
 
 @app.post('/sensor-data')
@@ -75,5 +81,5 @@ async def create_sensor_data(sensor_data: SensorData):
     Args:
         sensor_data (SensorData): sensor data model
     """
-    data_utils.write_sensor_data(sensor_data, sensor_data.sensor.sensor_type)
+    data_utils.write_sensor_data(sensor_data)
     return {'message': 'Sensor Data Successfully Created'}
