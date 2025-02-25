@@ -48,7 +48,7 @@ def main(argv):
         host='0.0.0.0',
         port=8000,
         log_level='debug',
-        reload=True,
+        reload=False,
         # To pass client real ip through proxies (AWS app runner and/or nginx)
         proxy_headers=True,
         forwarded_allow_ips='*',
