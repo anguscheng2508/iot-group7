@@ -164,4 +164,5 @@ cython_debug/
 
 env.sh
 nohup.out
-data/
+/data/*
+!/data/.gitignore
