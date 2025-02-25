@@ -33,6 +33,14 @@ async def get_event() -> List[Event]:
     """Get list of events for frontend
     """
     data = data_utils.read_event_data()
+    def parse_device_name(name):
+        if name.startswith('SensorType.'):
+            return SensorType[name.split('.')[1]]
+        elif name.startswith('ActuatorType.'):
+            return ActuatorType[name.split('.')[1]]
+        else:
+            raise ValueError(f"Unknown device name: {name}")
+    data['device_name'] = data['device_name'].apply(parse_device_name)
     events = [Event(**row) for index, row in data.iterrows()]
     return events
 

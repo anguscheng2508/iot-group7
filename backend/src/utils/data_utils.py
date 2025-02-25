@@ -34,7 +34,7 @@ def read_event_data() -> pd.DataFrame:
     file_path = './data/event.csv'
     if not os.path.exists(file_path):
         with open(file_path, 'w') as f:
-            temp_data = pd.DataFrame(columns=['device_id', 'name', 'timestamp', 'description'])
+            temp_data = pd.DataFrame(columns=['device_name', 'timestamp', 'description'])
             temp_data.to_csv(file_path, index=False)
             return temp_data
     return pd.read_csv(file_path)
