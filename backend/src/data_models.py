@@ -1,6 +1,7 @@
 import datetime
 from enum import Enum
 from pydantic import BaseModel, ConfigDict
+from typing import Optional
 
 
 class SensorType(Enum):
@@ -24,24 +25,14 @@ class Event(BaseModel):
     device_id: int
     name: str
     description: str
-    timestamp: datetime.datetime
+    timestamp: Optional[datetime.datetime] = None
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
-class Actuator(BaseModel):
-    device_id: int
-    actuator: ActuatorType
-
-
-class Sensor(BaseModel):
-    device_id: int
-    sensor_type: SensorType
-
-
 class SensorData(BaseModel):
-    sensor: Sensor
-    timestamp: datetime.datetime
+    sensor: SensorType
+    timestamp: Optional[datetime.datetime] = None
     value: float
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
