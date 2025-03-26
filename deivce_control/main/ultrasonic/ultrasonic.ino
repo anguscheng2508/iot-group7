@@ -50,7 +50,7 @@ void connectWiFi() {
 }
 
 // Send Sensor Data to AWS EC2
-void sendSensorData(int sensorValue) {
+void sendSensorData(int sensorValue, String sensorName) {
     if (WiFi.status() == WL_CONNECTED) {
         HTTPClient http;
         
@@ -64,7 +64,7 @@ void sendSensorData(int sensorValue) {
 
         // Create JSON Data
         StaticJsonDocument<200> jsonDoc;
-        jsonDoc["sensor"] = "Distance";  // Changed from object to string with valid enum value
+        jsonDoc["sensor"] = sensorName;  // Changed from object to string with valid enum value
         jsonDoc["device_id"] = 1;        // Moved device_id to root level
         
         // Get current timestamp (if you have a way to get real time)
@@ -118,6 +118,7 @@ void loop() {
         Serial.print(distance);
         Serial.println(" cm");
         
-        sendSensorData(distance);
+        sendSensorData(distance, "Distance");
+        
     }
 }
