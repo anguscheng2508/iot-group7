@@ -62,16 +62,42 @@ async def update_actuator(actuator: Actuator):
     """
     pass
 
-
 @app.get('/actuator')
-async def get_acturator() -> List[Actuator]:
-    """Get list of actuators for frontend
-    """
-    actuators = [
-        {"name": f"{actuator_type.value}_1", "type": actuator_type}
-        for actuator_type in ActuatorType
-    ]
+async def get_actuator() -> List[Actuator]:
+    """Get list of actuators for frontend"""
+    data = data_utils.read_actuator_status()
+
+    if data.empty:
+        logging.info("Actuator data is empty, returning default actuators")
+        return [
+            Actuator(name=f"{actuator_type.value}_1", type=actuator_type, status=False)
+            for actuator_type in ActuatorType
+        ]
+    
+    actuators = []
+    for index, row in data.iterrows():
+        type_value = row['type']
+        actuator_type = next((at for at in ActuatorType if at.value == type_value), None)
+        if actuator_type is None:
+            logging.warning(f"Invalid actuator type found in CSV: {type_value}")
+            continue 
+        actuators.append(
+            Actuator(
+                name=row['name'],
+                type=actuator_type,
+                status=bool(row['status'])
+            )
+        )
     return actuators
+# @app.get('/actuator')
+# async def get_acturator() -> List[Actuator]:
+#     """Get list of actuators for frontend
+#     """
+#     actuators = [
+#         {"name": f"{actuator_type.value}_1", "type": actuator_type}
+#         for actuator_type in ActuatorType
+#     ]
+#     return actuators
 
 
 @app.get('/sensor')

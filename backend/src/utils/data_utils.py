@@ -4,7 +4,7 @@ import os
 
 import pandas as pd
 from absl import logging
-from src.data_models import Event, SensorData, SensorType
+from src.data_models import Event, SensorData, SensorType, Actuator, ActuatorType
 
 
 def read_sensor_data(data_enum: SensorType) -> pd.DataFrame:
@@ -49,3 +49,15 @@ def write_event_data(event: Event):
     data = pd.concat([data, pd.DataFrame([event_dict])], ignore_index=True)
     data.to_csv(file_path, index=False)
     return
+
+
+def read_actuator_status() -> pd.DataFrame:
+    """Read actuator status from CSV file. If file does not exist, create an empty file."""
+    file_path = '/home/ubuntu01/iot-group7/backend/data/actuator.csv'
+    if not os.path.exists(file_path):
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # 修正为使用文件路径的目录
+        with open(file_path, 'w') as f:
+            temp_data = pd.DataFrame(columns=['name', 'type', 'status', 'timestamp'])
+            temp_data.to_csv(file_path, index=False)
+            return temp_data
+    return pd.read_csv(file_path)
