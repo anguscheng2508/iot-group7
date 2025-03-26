@@ -54,18 +54,11 @@ async def get_event() -> List[Event]:
 
 
 @app.put('/actuator/{actuator_type}')
-async def update_acturator(actuator_type: ActuatorType):
+async def update_actuator(actuator: Actuator):
     """Control actuator by id
 
     Args:
         actuator_type (ActuatorType): actuator enum type
-    """
-    pass
-
-
-@app.get('/actuator-status')
-async def get_actuator_status() -> List[Actuator]:
-    """Get list of actuators status for frontend
     """
     pass
 
