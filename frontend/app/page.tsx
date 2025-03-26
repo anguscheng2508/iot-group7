@@ -9,8 +9,8 @@ export default async function Home() {
   console.log(actuators);
   console.log(sensors);
   return (
-    <div className="flex m-5 w-full">
-      <div className="flex-col mr-5 border border-gray-300 p-4 w-4/6">
+    <div className="flex p-10 w-full">
+      <div className="flex-col mr-5 border border-gray-300 p-4 w-1/2">
         <div className="border-b border-gray-300 pb-4 mb-4">
           <h3 className="text-lg font-semibold">Sensors</h3>
           {sensors.map((sensor) => (
