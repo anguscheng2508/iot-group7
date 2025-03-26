@@ -4,7 +4,9 @@ from typing import List
 from absl import logging
 
 from src.utils import data_utils
-from src.data_models import ActuatorType, Event, SensorData, SensorType
+from src.utils import sensor_utils
+from src.utils import actuator_utils
+from src.data_models import ActuatorType, Event, SensorData, SensorType, Sensor, Actuator
 
 app = fastapi.FastAPI()
 
@@ -56,17 +58,45 @@ async def update_acturator(actuator_type: ActuatorType):
 
 
 @app.get('/acturator')
-async def get_acturator():
+async def get_acturator() -> List[Actuator]:
     """Get list of actuators for frontend
     """
-    pass
+    data = actuator_utils.read_actuator_list()
+    data['type'] = data['type'].apply(lambda x: ActuatorType[x.split('.')[1]])
+    records = [Actuator(**row) for index, row in data.iterrows()]
+    return records
+
+
+@app.post('/acturator')
+async def create_actuator(actuator: Actuator):
+    """Create an actuator
+    
+    Args:
+        actuator (Actuator): actuator model
+    """
+    actuator_utils.write_to_actuator_list(actuator)
+    return {'message': f'Actuator {actuator.name} Successfully Created'}
 
 
 @app.get('/sensor')
-async def get_sensor():
+async def get_sensor() -> List[Sensor]:
     """Get list of sensors for frontend
     """
-    pass
+    data = sensor_utils.read_sensor_list()
+    data['type'] = data['type'].apply(lambda x: SensorType[x.split('.')[1]])
+    records = [Sensor(**row) for index, row in data.iterrows()]
+    return records
+
+
+@app.post('/sensor')
+async def create_sensor(sensor: Sensor):
+    """Create a sensor
+    
+    Args:
+        sensor (Sensor): sensor model
+    """
+    sensor_utils.write_to_sensor_list(sensor)
+    return {'message': f'Sensor {sensor.name} Successfully Created'}
 
 
 @app.get('/sensor-data/{sensor_type}')

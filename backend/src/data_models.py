@@ -35,3 +35,13 @@ class SensorData(BaseModel):
     value: float
 
     model_config = ConfigDict(arbitrary_types_allowed=True)
+
+
+class Sensor(BaseModel):
+    name: str
+    type: SensorType
+
+
+class Actuator(BaseModel):
+    name: str
+    type: ActuatorType
