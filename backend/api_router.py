@@ -54,7 +54,7 @@ async def get_event() -> List[Event]:
 
 
 @app.put('/actuator/{actuator_type}')
-async def update_acturator(actuator_type: ActuatorType):
+async def update_actuator(actuator: Actuator):
     """Control actuator by id
 
     Args:

@@ -1,7 +1,8 @@
 import datetime
 from enum import Enum
-from pydantic import BaseModel, ConfigDict
 from typing import Optional, Union
+
+from pydantic import BaseModel, ConfigDict
 
 
 class SensorType(Enum):
@@ -45,3 +46,4 @@ class Sensor(BaseModel):
 class Actuator(BaseModel):
     name: str
     type: ActuatorType
+    status: Optional[bool] = False
