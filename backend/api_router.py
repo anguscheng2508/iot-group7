@@ -63,6 +63,13 @@ async def update_acturator(actuator_type: ActuatorType):
     pass
 
 
+@app.get('/actuator-status')
+async def get_actuator_status() -> List[Actuator]:
+    """Get list of actuators status for frontend
+    """
+    pass
+
+
 @app.get('/actuator')
 async def get_acturator() -> List[Actuator]:
     """Get list of actuators for frontend
