@@ -46,4 +46,4 @@ class Sensor(BaseModel):
 class Actuator(BaseModel):
     name: str
     type: ActuatorType
-    status: bool
+    status: Optional[bool] = False
