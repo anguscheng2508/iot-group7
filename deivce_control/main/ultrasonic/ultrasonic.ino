@@ -7,7 +7,7 @@ const char* ssid = "eir53845773";       // Replace with your WiFi SSID
 const char* password = "9fXt7kJEHT"; // Replace with your WiFi password
 
 // AWS EC2 API URL (Use your actual API endpoint)
-const char* serverUrl = "http://ec2-54-171-174-135.eu-west-1.compute.amazonaws.com:8000/sensor-data";
+const char* serverUrl = "https://8601-89-101-47-26.ngrok-free.app";
 
 // Sensor Pins
 const int echoPin = 13;
@@ -50,21 +50,32 @@ void connectWiFi() {
 }
 
 // Send Sensor Data to AWS EC2
-void sendSensorData(int sensorValue) {
+void sendSensorData(int sensorValue, String sensorName) {
     if (WiFi.status() == WL_CONNECTED) {
         HTTPClient http;
-        http.begin(serverUrl);
+        
+        // You might need to append a specific path to your base URL
+        String endpoint = String(serverUrl) + "/sensor-data";  // Modify this path as needed
+        Serial.print("Sending data to: ");
+        Serial.println(endpoint);
+        
+        http.begin(endpoint);
         http.addHeader("Content-Type", "application/json");
 
         // Create JSON Data
         StaticJsonDocument<200> jsonDoc;
-        jsonDoc["sensor"]["device_id"] = 1;
-        jsonDoc["sensor"]["sensor_type"] = "Ultrasonic";
-        jsonDoc["timestamp"] = "2025-02-21T15:22:36.050Z";  // Ideally, get real-time
+        jsonDoc["sensor"] = sensorName;  // Changed from object to string with valid enum value
+        jsonDoc["device_id"] = 1;        // Moved device_id to root level
+        
+        // Get current timestamp (if you have a way to get real time)
+        jsonDoc["timestamp"] = "2025-02-21T15:22:36.050Z";  
         jsonDoc["value"] = sensorValue;
 
         String requestBody;
         serializeJson(jsonDoc, requestBody);
+        
+        Serial.print("Request body: ");
+        Serial.println(requestBody);
         
         // Send HTTP POST request
         int httpResponseCode = http.POST(requestBody);
@@ -75,11 +86,15 @@ void sendSensorData(int sensorValue) {
             String response = http.getString();
             Serial.println("Response:");
             Serial.println(response);
+        } else {
+            Serial.print("Error sending HTTP request: ");
+            Serial.println(http.errorToString(httpResponseCode));
         }
         
         http.end();
     } else {
         Serial.println("WiFi Disconnected, cannot send data.");
+        connectWiFi();  // Attempt to reconnect
     }
 }
 
@@ -103,6 +118,7 @@ void loop() {
         Serial.print(distance);
         Serial.println(" cm");
         
-        sendSensorData(distance);
+        sendSensorData(distance, "Distance");
+        
     }
 }
