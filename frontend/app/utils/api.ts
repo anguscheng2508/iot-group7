@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const backendApi = "https://8601-89-101-47-26.ngrok-free.app";
+// const backendApi = "https://8601-89-101-47-26.ngrok-free.app";
+const backendApi = "http://localhost:8000";
 
 const hardwareApi = {
   getSensors: async () => {
@@ -34,10 +35,15 @@ const dataApi = {
     });
   },
 
-  getEventData: async () => {
+  getEventData: async (): Promise<IEvent[]> => {
     return axios.get(`${backendApi}/event`).then((response) => {
       if (response.status === 200) {
-        return response.data;
+        return response.data.map((event: any) => {
+          return {
+            ...event,
+            deviceName: event["device_name"],
+          } as IEvent;
+        });
       } else {
         throw Error("Failed to get events.");
       }

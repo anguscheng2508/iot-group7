@@ -16,7 +16,8 @@ enum ActuatorType {
 }
 
 // Interface for Event
-interface Event {
+// Avoid name collision with Event class
+interface IEvent {
   deviceName: SensorType | ActuatorType;
   description: string;
   timestamp?: Date; // Optional field
