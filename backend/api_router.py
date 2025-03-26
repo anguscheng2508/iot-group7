@@ -1,10 +1,17 @@
-import fastapi
-from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from absl import logging
 
+import fastapi
+from absl import logging
+from fastapi.middleware.cors import CORSMiddleware
+from src.data_models import (
+    Actuator,
+    ActuatorType,
+    Event,
+    Sensor,
+    SensorData,
+    SensorType,
+)
 from src.utils import data_utils
-from src.data_models import ActuatorType, Event, SensorData, SensorType, Sensor, Actuator
 
 app = fastapi.FastAPI()
 
@@ -33,6 +40,7 @@ async def get_event() -> List[Event]:
     """Get list of events for frontend
     """
     data = data_utils.read_event_data()
+
     def parse_device_name(name):
         if name.startswith('SensorType.'):
             return SensorType[name.split('.')[1]]
@@ -45,7 +53,7 @@ async def get_event() -> List[Event]:
     return events
 
 
-@app.put('/acturator/{actuator_type}')
+@app.put('/actuator/{actuator_type}')
 async def update_acturator(actuator_type: ActuatorType):
     """Control actuator by id
 
@@ -55,7 +63,7 @@ async def update_acturator(actuator_type: ActuatorType):
     pass
 
 
-@app.get('/acturator')
+@app.get('/actuator')
 async def get_acturator() -> List[Actuator]:
     """Get list of actuators for frontend
     """
