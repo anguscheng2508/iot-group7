@@ -1,32 +1,54 @@
-import api from "../utils/api";
+"use client";
 
-async function EventList() {
-  const events = await api.getEventData();
-  console.log(events);
+import React, { useState } from "react";
+import { Button } from "@heroui/react";
+import serverGetEvents from "../utils/serverGetEvents";
 
+function EventList({ initEvents }: { initEvents: IEvent[] }) {
+  const [events, setEvents] = useState<IEvent[]>(initEvents);
+  const [isLoading, setIsLoading] = useState(false);
+  const handlePress = async () => {
+    setIsLoading(true);
+    const events = await serverGetEvents();
+    setIsLoading(false);
+    setEvents(events);
+  };
   return (
     <section className="max-h-screen overflow-y-auto">
-      <h3 className="font-bold pb-4">Event List</h3>
-      {events.map((event: IEvent) => {
-        return (
-          <div
-            key={Math.random()}
-            className="flex flex-col gap-y-1 border-b border-gray-300 pb-4 mb-4"
-          >
-            <h4>
-              <span className="text-gray-500">Device</span>: {event.deviceName}
-            </h4>
-            <span>
-              <span className="text-gray-500">Description</span>:{" "}
-              {event.description}
-            </span>
-            <span>
-              <span className="text-gray-500">Time</span>:{" "}
-              {formatDate(event?.timestamp?.toString() || null)}
-            </span>
-          </div>
-        );
-      })}
+      <div className="flex justify-between items-center pb-4">
+        <h3 className="font-bold">Event List</h3>
+        <button
+          onClick={handlePress}
+          className="border-gray-300 border-1 px-2 py-1 hover:bg-gray-200"
+        >
+          Refresh
+        </button>
+      </div>
+      {isLoading ? (
+        <div className="m-auto">Loading...</div>
+      ) : (
+        events.map((event: IEvent) => {
+          return (
+            <div
+              key={Math.random()}
+              className="flex flex-col gap-y-1 border-b border-gray-300 pb-4 mb-4"
+            >
+              <h4>
+                <span className="text-gray-500">Device</span>:{" "}
+                {event.deviceName}
+              </h4>
+              <span>
+                <span className="text-gray-500">Description</span>:{" "}
+                {event.description}
+              </span>
+              <span>
+                <span className="text-gray-500">Time</span>:{" "}
+                {formatDate(event?.timestamp?.toString() || null)}
+              </span>
+            </div>
+          );
+        })
+      )}
     </section>
   );
 }
