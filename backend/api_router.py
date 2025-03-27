@@ -53,14 +53,7 @@ async def get_event() -> List[Event]:
     return events
 
 
-@app.put('/actuator/{actuator_type}')
-async def update_actuator(actuator: Actuator):
-    """Control actuator by id
 
-    Args:
-        actuator_type (ActuatorType): actuator enum type
-    """
-    pass
 
 @app.get('/actuator')
 async def get_actuator() -> List[Actuator]:
@@ -68,7 +61,6 @@ async def get_actuator() -> List[Actuator]:
     data = data_utils.read_actuator_status()
 
     if data.empty:
-        logging.info("Actuator data is empty, returning default actuators")
         return [
             Actuator(name=f"{actuator_type.value}_1", type=actuator_type, status=False)
             for actuator_type in ActuatorType
@@ -79,7 +71,6 @@ async def get_actuator() -> List[Actuator]:
         type_value = row['type']
         actuator_type = next((at for at in ActuatorType if at.value == type_value), None)
         if actuator_type is None:
-            logging.warning(f"Invalid actuator type found in CSV: {type_value}")
             continue 
         actuators.append(
             Actuator(
@@ -98,6 +89,70 @@ async def get_actuator() -> List[Actuator]:
 #         for actuator_type in ActuatorType
 #     ]
 #     return actuators
+
+
+# @app.put('/actuator/{actuator_type}')
+# async def update_actuator(actuator: Actuator):
+#     """Control actuator by id
+
+#     Args:
+#         actuator_type (ActuatorType): actuator enum type
+#     """
+#     pass
+
+@app.put('/actuator/{actuator_type}')
+async def update_actuator(actuator_type: ActuatorType):
+    """Control actuator by type - toggle the status of all actuators of the given type"""
+    current_data = data_utils.read_actuator_status()
+    
+    current_actuators = []
+    if not current_data.empty:
+        for _, row in current_data.iterrows():
+            type_value = row['type']
+            actuator_type_found = next((at for at in ActuatorType if at.value == type_value), None)
+            if actuator_type_found is None:
+                continue
+            current_actuators.append(
+                Actuator(
+                    name=row['name'],
+                    type=actuator_type_found,
+                    status=bool(row['status'])
+                )
+            )
+    else:
+        raise fastapi.HTTPException(
+            status_code=404,
+            detail=f"No actuators found in the system"
+        )
+    
+    updated = False
+    new_status = None  
+    for actuator in current_actuators:
+        if actuator.type == actuator_type:
+            actuator.status = not actuator.status  
+            new_status = actuator.status 
+            updated = True
+    
+    if not updated:
+        raise fastapi.HTTPException(
+            status_code=404,
+            detail=f"No actuators of type {actuator_type.value} found"
+        )
+
+    data_utils.write_actuator_status(current_actuators)
+    
+    status_str = "on" if new_status else "off"
+    description = f"Toggled status of {actuator_type.value} actuators to {status_str}"
+    
+    event = Event(
+        device_name=actuator_type,
+        description=description
+    )
+    data_utils.write_event_data(event)
+    
+    return {"message": f"Status of actuators of type {actuator_type.value} toggled to {status_str}"}
+
+
 
 
 @app.get('/sensor')

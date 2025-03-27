@@ -53,11 +53,45 @@ def write_event_data(event: Event):
 
 def read_actuator_status() -> pd.DataFrame:
     """Read actuator status from CSV file. If file does not exist, create an empty file."""
-    file_path = '/home/ubuntu01/iot-group7/backend/data/actuator.csv'
+    file_path = './data/actuator.csv'
     if not os.path.exists(file_path):
-        os.makedirs(os.path.dirname(file_path), exist_ok=True)  # 修正为使用文件路径的目录
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)  
         with open(file_path, 'w') as f:
             temp_data = pd.DataFrame(columns=['name', 'type', 'status', 'timestamp'])
             temp_data.to_csv(file_path, index=False)
             return temp_data
     return pd.read_csv(file_path)
+
+
+def read_actuator_status() -> pd.DataFrame:
+    """Read actuator status from CSV file. If file does not exist, create an empty file."""
+    file_path = './data/actuator.csv'  
+
+    if not os.path.exists(file_path):
+     
+        os.makedirs(os.path.dirname(file_path), exist_ok=True)
+        with open(file_path, 'w') as f:
+            temp_data = pd.DataFrame(columns=['name', 'type', 'status', 'timestamp'])
+            temp_data.to_csv(file_path, index=False)
+            return temp_data
+  
+    with open(file_path, 'r') as f:
+        file_content = f.read()
+    data = pd.read_csv(file_path)
+ 
+    return data
+
+def write_actuator_status(current_actuators: list[Actuator]):
+    """Write actuator status to CSV file."""
+    file_path = './data/actuator.csv' 
+  
+    data = pd.DataFrame([{
+        'name': actuator.name,
+        'type': actuator.type.value,
+        'status': actuator.status,
+        'timestamp': datetime.datetime.now().isoformat()
+    } for actuator in current_actuators])
+    
+    os.makedirs(os.path.dirname(file_path), exist_ok=True)
+    data.to_csv(file_path, index=False)
+    return
