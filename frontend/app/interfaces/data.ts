@@ -40,4 +40,5 @@ interface Sensor {
 interface Actuator {
   name: string;
   type: ActuatorType;
+  status: boolean;
 }
