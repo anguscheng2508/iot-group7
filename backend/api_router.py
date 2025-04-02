@@ -36,7 +36,12 @@ async def websocket_endpoint(websocket: WebSocket, client_id: str):
     
     try:
         print(f"Device connected: {client_id}")
-        await websocket.send_json({"device": "LAMP", "action": "AUTO"})
+        actuator_list_data = actuator_utils.read_actuator_list()
+        for _, row in actuator_list_data.iterrows():
+            await websocket.send_json({
+                "device": row["type"].upper(),
+                "action": row["status"]
+            })
         
         # Listening messages from device
         while True:
