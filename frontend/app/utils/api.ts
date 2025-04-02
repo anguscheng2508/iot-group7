@@ -22,11 +22,20 @@ const hardwareApi = {
       }
     });
   },
+  putActuatorStatus: async (actuator: Actuator) => {
+    return axios.put(`${backendApi}/actuator/${actuator.type}`, actuator).then((response) => {
+      if (response.status === 200) {
+        return response.data;
+      } else {
+        throw Error("Failed to update actuator status.");
+      }
+    });
+  },
 };
 
 const dataApi = {
   getSensorData: async (sensorId: string) => {
-    return axios.get(`${backendApi}/sensor/${sensorId}`).then((response) => {
+    return axios.get(`${backendApi}/sensor-data/${sensorId}`).then((response) => {
       if (response.status === 200) {
         return response.data;
       } else {
