@@ -13,8 +13,9 @@ function useSensorData(sensorId: string) {
         setLoading(true);
         const sensorData = await api.getSensorData(sensorId);
         setData(sensorData);
-      } catch (err) {
+      } catch (error) {
         setError("Failed to fetch sensor data.");
+        console.error("Error fetching sensor data:", error);
       } finally {
         setLoading(false);
       }

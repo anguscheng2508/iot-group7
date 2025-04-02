@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@heroui/react";
-import { Line } from "react-chartjs-2";
+import dynamic from "next/dynamic";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -14,17 +14,38 @@ import {
   Legend,
   Filler,
 } from "chart.js";
-import zoomPlugin from "chartjs-plugin-zoom";
 import useSensorData from "../hooks/useSensorData";
 
-ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler, zoomPlugin);
+// Dynamically import the Line component with SSR disabled
+const Line = dynamic(() => import("react-chartjs-2").then((mod) => mod.Line), {
+  ssr: false,
+});
 
 function SensorButton({ sensor }: { sensor: Sensor }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const { data, loading, error } = useSensorData(sensor.type);
 
   const [startIndex, setStartIndex] = useState(0);
+  const [isChartReady, setIsChartReady] = useState(false); // Track when chart is ready
   const displayCount = 20;
+
+  // Register Chart.js components and zoom plugin only on the client side
+  useEffect(() => {
+    import("chartjs-plugin-zoom").then((zoom) => {
+      ChartJS.register(
+        CategoryScale,
+        LinearScale,
+        PointElement,
+        LineElement,
+        Title,
+        Tooltip,
+        Legend,
+        Filler,
+        zoom.default // Use .default for ES modules
+      );
+      setIsChartReady(true); // Mark chart as ready after registration
+    });
+  }, []);
 
   const handleNext = () => {
     if (data && startIndex + displayCount < data.length) {
@@ -113,13 +134,17 @@ function SensorButton({ sensor }: { sensor: Sensor }) {
             <ModalBody className="flex-col">
               {loading ? (
                 <div className="h-96 flex items-center justify-center">
-                  <p>Loading...</p> {/* Replace with a skeleton loader if desired */}
+                  <p>Loading...</p>
                 </div>
               ) : error ? (
                 <p>Error loading data: {error}</p>
+              ) : !isChartReady ? (
+                <div className="h-96 flex items-center justify-center">
+                  <p>Loading chart...</p>
+                </div>
               ) : (
                 <div className="flex-col w-full h-96 gap-12">
-                  {/* @ts-ignore */}
+                  {/* @ts-expect-error */}
                   <Line data={chartData} options={options} />
                 </div>
               )}

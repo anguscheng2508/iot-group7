@@ -1,26 +1,17 @@
 "use client";
 
 import React, { useState } from "react";
-import { Spinner, Tabs, Tab } from "@heroui/react";
+import { Tabs, Tab } from "@heroui/react";
 import api from "../utils/api";
 
 function ActuatorButton({ actuator }: { actuator: Actuator }) {
-  const [loading, setLoading] = useState(false);
   const [currentStatus, setCurrentStatus] = useState(actuator.status);
 
   const handleToggle = async (status: ActuatorStatus) => {
     if (status === currentStatus) return;
 
-    setLoading(true);
-
-    try {
-      await api.putActuatorStatus(actuator, status);
-      setCurrentStatus(status);
-    } catch (err) {
-      console.error("Failed to update actuator status.");
-    } finally {
-      setLoading(false);
-    }
+    await api.putActuatorStatus(actuator, status);
+    setCurrentStatus(status);
   };
 
   return (

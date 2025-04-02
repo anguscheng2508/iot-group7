@@ -1,3 +1,4 @@
+"server only";
 import ActuatorButton from "./components/ActuatorButton";
 import EventList from "./components/EventList";
 import SensorButton from "./components/SensorButton";
