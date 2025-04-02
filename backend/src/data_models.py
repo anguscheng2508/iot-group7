@@ -1,6 +1,6 @@
 import datetime
 from enum import Enum
-from typing import Optional, Union
+from typing import Optional, Union, Literal
 
 from pydantic import BaseModel, ConfigDict
 
@@ -15,7 +15,7 @@ class SensorType(Enum):
 class ActuatorType(Enum):
     PUMP = 'Pump'
     ALARM = 'Alarm'
-    LIGHT = 'Light'
+    LAMP = 'LAMP'
     WINDOW = 'Window'
     FAN = 'Fan'
 
@@ -46,4 +46,16 @@ class Sensor(BaseModel):
 class Actuator(BaseModel):
     name: str
     type: ActuatorType
-    status: Optional[bool] = False
+    status: Optional[Literal['ON', 'OFF', 'AUTO']] = 'AUTO'
+    
+    model_config = ConfigDict(arbitrary_types_allowed=True)
+    
+    def to_dict(self):
+        data = self.dict()
+        data['type'] = self.type.value
+        return data
+
+
+class DeviceAction(BaseModel):
+    device: ActuatorType
+    action: Literal['ON', 'OFF', 'AUTO']
