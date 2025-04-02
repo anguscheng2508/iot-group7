@@ -1,11 +1,19 @@
 import axios from "axios";
 
-// const backendApi = "https://8601-89-101-47-26.ngrok-free.app";
-const backendApi = "http://localhost:8000";
+const backendApi = "https://4ac9-134-226-214-244.ngrok-free.app";
+// const backendApi = "http://localhost:8000";
+
+// Create an Axios instance
+const api = axios.create({
+  baseURL: backendApi,
+  headers: {
+    "ngrok-skip-browser-warning": "true",
+  },
+});
 
 const hardwareApi = {
   getSensors: async () => {
-    return axios.get(`${backendApi}/sensor`).then((response) => {
+    return api.get(`${backendApi}/sensor`).then((response) => {
       if (response.status === 200) {
         return response.data;
       } else {
@@ -14,7 +22,7 @@ const hardwareApi = {
     });
   },
   getActuators: async () => {
-    return axios.get(`${backendApi}/actuator`).then((response) => {
+    return api.get(`${backendApi}/actuator`).then((response) => {
       if (response.status === 200) {
         return response.data;
       } else {
@@ -22,20 +30,24 @@ const hardwareApi = {
       }
     });
   },
-  putActuatorStatus: async (actuator: Actuator) => {
-    return axios.put(`${backendApi}/actuator/${actuator.type}`, actuator).then((response) => {
-      if (response.status === 200) {
-        return response.data;
-      } else {
-        throw Error("Failed to update actuator status.");
-      }
-    });
+  putActuatorStatus: async (actuator: Actuator, status: ActuatorStatus) => {
+    return api
+      .put(`${backendApi}/actuator/${actuator.type}`, null, {
+        params: { action: status, request_from: "user_interface" },
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          return response.data;
+        } else {
+          throw Error("Failed to update actuator status.");
+        }
+      });
   },
 };
 
 const dataApi = {
   getSensorData: async (sensorId: string) => {
-    return axios.get(`${backendApi}/sensor-data/${sensorId}`).then((response) => {
+    return api.get(`${backendApi}/sensor-data/${sensorId}`).then((response) => {
       if (response.status === 200) {
         return response.data;
       } else {
@@ -45,7 +57,7 @@ const dataApi = {
   },
 
   getEventData: async (): Promise<IEvent[]> => {
-    return axios.get(`${backendApi}/event`).then((response) => {
+    return api.get(`${backendApi}/event`).then((response) => {
       if (response.status === 200) {
         return response.data.map((event: any) => {
           return {

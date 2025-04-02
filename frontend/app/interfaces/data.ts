@@ -10,7 +10,7 @@ enum SensorType {
 enum ActuatorType {
   PUMP = "Pump",
   ALARM = "Alarm",
-  LIGHT = "Light",
+  LAMP = "LAMP",
   WINDOW = "Window",
   FAN = "Fan",
 }
@@ -40,5 +40,11 @@ interface Sensor {
 interface Actuator {
   name: string;
   type: ActuatorType;
-  status: boolean;
+  status: ActuatorStatus;
+}
+
+enum ActuatorStatus {
+  ON = "ON",
+  OFF = "OFF",
+  AUTO = "AUTO",
 }
